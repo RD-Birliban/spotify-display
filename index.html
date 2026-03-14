@@ -34,9 +34,26 @@ box-sizing:border-box;
 }
 
 .song{
-padding:10px 0;
+padding:8px 0;
 border-bottom:1px solid #333;
-font-size:20px;
+font-size:18px;
+}
+
+/* Portrait automatisch drehen */
+
+@media screen and (orientation: portrait) {
+
+body{
+transform:rotate(90deg);
+transform-origin:center;
+width:100vh;
+height:100vw;
+position:absolute;
+top:0;
+left:0;
+overflow:hidden;
+}
+
 }
 
 </style>
@@ -51,62 +68,77 @@ font-size:20px;
 
 <script>
 
-// Playlist Daten
-const playlists = {
+
+// ---------- PLAYLIST DATEN ----------
+
+const playlists={
 
 1:{
 cover:"stardust1.jpg",
 songs:[
-"Track 1",
-"Track 2",
-"Track 3",
-"Track 4",
-"Track 5"
+"Song 1",
+"Song 2",
+"Song 3",
+"Song 4",
+"Song 5"
 ]
 },
 
 10:{
 cover:"stardust10.jpg",
 songs:[
-"Track A",
-"Track B",
-"Track C",
-"Track D"
+"Song A",
+"Song B",
+"Song C",
+"Song D"
 ]
 }
 
 };
 
-// URL Parameter
-const params = new URLSearchParams(window.location.search);
-const playlistNumber = params.get("playlist") || "1";
 
-const data = playlists[playlistNumber];
+// ---------- URL PARAMETER ----------
 
-// Cover anzeigen
-document.getElementById("cover").style.backgroundImage =
+const params=new URLSearchParams(window.location.search);
+
+const playlistNumber=params.get("playlist") || "1";
+
+const data=playlists[playlistNumber];
+
+
+// ---------- COVER ----------
+
+document.getElementById("cover").style.backgroundImage=
 "url("+data.cover+")";
 
-// Playlist anzeigen
-const list = document.getElementById("playlist");
 
-data.songs.forEach(song => {
+// ---------- PLAYLIST ----------
 
-const div = document.createElement("div");
-div.className = "song";
-div.innerText = song;
+const list=document.getElementById("playlist");
+
+data.songs.forEach(song=>{
+
+const div=document.createElement("div");
+
+div.className="song";
+
+div.innerText=song;
 
 list.appendChild(div);
 
 });
 
-// Wake Lock
-let wakeLock = null;
+
+// ---------- WAKE LOCK ----------
+
+let wakeLock=null;
 
 async function activateWakeLock(){
 
 try{
-wakeLock = await navigator.wakeLock.request("screen");
+
+wakeLock=await navigator.wakeLock.request("screen");
+
 }catch(e){}
 
 }
@@ -114,15 +146,30 @@ wakeLock = await navigator.wakeLock.request("screen");
 activateWakeLock();
 
 document.addEventListener("visibilitychange",()=>{
+
 if(document.visibilityState==="visible"){
+
 activateWakeLock();
+
 }
+
 });
 
-// Landscape Lock
+
+// ---------- LANDSCAPE LOCK ----------
+
+function lockLandscape(){
+
 if(screen.orientation && screen.orientation.lock){
+
 screen.orientation.lock("landscape").catch(()=>{});
+
 }
+
+}
+
+document.body.addEventListener("click",lockLandscape,{once:true});
+
 
 </script>
 
