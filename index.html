@@ -11,11 +11,10 @@
 body{
 margin:0;
 background:black;
-color:white;
-font-family:Arial;
 display:flex;
 height:100vh;
 overflow:hidden;
+font-family:Arial;
 }
 
 .cover{
@@ -28,15 +27,16 @@ background-color:black;
 
 .tracklist{
 width:50%;
-overflow-y:auto;
-padding:40px;
-box-sizing:border-box;
+background:black;
+display:flex;
+align-items:center;
+justify-content:center;
 }
 
-.track{
-padding:8px 0;
-border-bottom:1px solid #333;
-font-size:18px;
+iframe{
+width:100%;
+height:100%;
+border:none;
 }
 
 </style>
@@ -47,104 +47,50 @@ font-size:18px;
 
 <div class="cover" id="cover"></div>
 
-<div class="tracklist" id="tracks"></div>
+<div class="tracklist">
+<iframe id="playlistFrame"></iframe>
+</div>
 
 <script>
 
-// ---------- CONFIG ----------
-
-const CLIENT_ID = "ae924384707e45a48f0f2ad40d81b7ba";
-
 const playlists = {
-"6TQ37H5gLqvnxnKEayZu9I": "stardust1.jpg",
-"6MzB3QOiWI4Qy9N9iHkdrm": "stardust2.jpg",
-"6u48tAKP7yP2ankPJcGlHn": "stardust3.jpg",
-"3iBWHhVX14r2PCwDmDRMw3": "stardust4.jpg",
-"1WCQMg708ovpzimXgvdX5x": "stardust5.jpg",
-"2C2iDRGUe4Mr2Z37Pou08P": "stardust6.jpg",
-"7nzEEyhFPyuViEsLmqobOy": "stardust7.jpg",
-"55mIftuEdbkyRd8ODZKgmX": "stardust8.jpg",
-"7ltsfibFaWTIWkhIAFEcce": "stardust9.jpg",
-"0Y2zyerj0yX6A59GPOEcEt": "stardust10.jpg",
-"1T2s8sOdvTf8WWOCYo6qEF": "stardust11.jpg",
-"49Hxf2UzxMm0QDN59BdHxO": "stardust12.jpg",
-"0QhTmNi5btV3EJ6uDLxfzt": "stardust13.jpg",
-"60U1qPaQ5RUCFQyjqPEAwO": "stardust14.jpg",
-"3SbH41Hou0JDePcQtIxq4H": "stardust15.jpg",
-"10k2UhKJUy2DODxM2xCqer": "stardust16.jpg",
-"7i1GWf9jDtxsl4mvyZcRpb": "stardust17.jpg"
+
+"6TQ37H5gLqvnxnKEayZu9I":"stardust1.jpg",
+"6MzB3QOiWI4Qy9N9iHkdrm":"stardust2.jpg",
+"6u48tAKP7yP2ankPJcGlHn":"stardust3.jpg",
+"3iBWHhVX14r2PCwDmDRMw3":"stardust4.jpg",
+"1WCQMg708ovpzimXgvdX5x":"stardust5.jpg",
+"2C2iDRGUe4Mr2Z37Pou08P":"stardust6.jpg",
+"7nzEEyhFPyuViEsLmqobOy":"stardust7.jpg",
+"55mIftuEdbkyRd8ODZKgmX":"stardust8.jpg",
+"7ltsfibFaWTIWkhIAFEcce":"stardust9.jpg",
+"0Y2zyerj0yX6A59GPOEcEt":"stardust10.jpg",
+"1T2s8sOdvTf8WWOCYo6qEF":"stardust11.jpg",
+"49Hxf2UzxMm0QDN59BdHxO":"stardust12.jpg",
+"0QhTmNi5btV3EJ6uDLxfzt":"stardust13.jpg",
+"60U1qPaQ5RUCFQyjqPEAwO":"stardust14.jpg",
+"3SbH41Hou0JDePcQtIxq4H":"stardust15.jpg",
+"10k2UhKJUy2DODxM2xCqer":"stardust16.jpg",
+"7i1GWf9jDtxsl4mvyZcRpb":"stardust17.jpg"
+
 };
 
-// ---------- TOKEN ----------
+const playlist="6TQ37H5gLqvnxnKEayZu9I";
 
-async function getToken(){
+document.getElementById("cover").style.backgroundImage =
+"url("+playlists[playlist]+")";
 
-const res = await fetch("https://accounts.spotify.com/api/token",{
-method:"POST",
-headers:{
-"Content-Type":"application/x-www-form-urlencoded"
-},
-body:"grant_type=client_credentials&client_id="+CLIENT_ID
-});
+document.getElementById("playlistFrame").src =
+"https://open.spotify.com/embed/playlist/"+playlist+"?utm_source=generator";
 
-const data = await res.json();
-return data.access_token;
 
-}
-
-// ---------- PLAYLIST TRACKS ----------
-
-async function loadPlaylist(playlistId){
-
-const token = await getToken();
-
-const res = await fetch(
-"https://api.spotify.com/v1/playlists/"+playlistId+"/tracks",
-{
-headers:{
-Authorization:"Bearer "+token
-}
-}
-);
-
-const data = await res.json();
-
-const trackContainer = document.getElementById("tracks");
-trackContainer.innerHTML="";
-
-data.items.forEach(item=>{
-
-const div=document.createElement("div");
-div.className="track";
-
-div.innerText=
-item.track.name+" — "+item.track.artists[0].name;
-
-trackContainer.appendChild(div);
-
-});
-
-}
-
-// ---------- COVER ----------
-
-function setCover(playlistId){
-
-const cover=playlists[playlistId];
-
-document.getElementById("cover").style.backgroundImage=
-"url("+cover+")";
-
-}
-
-// ---------- WAKE LOCK ----------
-
+// Wake Lock
 let wakeLock=null;
 
 async function activateWakeLock(){
 try{
 wakeLock=await navigator.wakeLock.request("screen");
-}catch(err){}
+}catch(e){}
 }
 
 activateWakeLock();
@@ -155,18 +101,11 @@ activateWakeLock();
 }
 });
 
-// ---------- LANDSCAPE ----------
 
+// Landscape Lock
 if(screen.orientation && screen.orientation.lock){
 screen.orientation.lock("landscape").catch(()=>{});
 }
-
-// ---------- START ----------
-
-const defaultPlaylist="6TQ37H5gLqvnxnKEayZu9I";
-
-setCover(defaultPlaylist);
-loadPlaylist(defaultPlaylist);
 
 </script>
 
