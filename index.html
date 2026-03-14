@@ -10,25 +10,41 @@ display:flex;
 background:black;
 color:white;
 font-family:Arial;
+height:100vh;
+}
+
+.playlists{
+width:25%;
+overflow:auto;
+border-right:1px solid #333;
+padding:20px;
+}
+
+.playlist{
+padding:10px;
+cursor:pointer;
+border-bottom:1px solid #333;
+}
+
+.playlist:hover{
+background:#222;
 }
 
 .cover{
-width:40%;
-height:100vh;
+width:35%;
 background-size:cover;
 background-position:center;
 }
 
-.list{
-width:60%;
-padding:40px;
+.songs{
+width:40%;
 overflow:auto;
+padding:20px;
 }
 
 .song{
-padding:12px;
+padding:8px;
 border-bottom:1px solid #333;
-font-size:20px;
 }
 
 </style>
@@ -36,16 +52,94 @@ font-size:20px;
 
 <body>
 
-<div class="cover" style="background-image:url('https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228')"></div>
+<div class="playlists" id="playlists"></div>
+<div class="cover" id="cover"></div>
+<div class="songs" id="songs"></div>
 
-<div class="list">
+<script>
 
-<div class="song">Song 1</div>
-<div class="song">Song 2</div>
-<div class="song">Song 3</div>
-<div class="song">Song 4</div>
+const clientId = "ae924384707e45a48f0f2ad40d81b7ba";
+const redirectUri = "https://rd-birliban.github.io/spotify-display";
+const scopes = "playlist-read-private";
 
-</div>
+function login(){
+let url =
+"https://accounts.spotify.com/authorize" +
+"?client_id=" + clientId +
+"&response_type=token" +
+"&redirect_uri=" + encodeURIComponent(redirectUri) +
+"&scope=" + scopes;
+
+window.location = url;
+}
+
+function getToken(){
+let hash = window.location.hash;
+if(!hash){
+login();
+return null;
+}
+return hash.split("&")[0].split("=")[1];
+}
+
+async function loadPlaylists(){
+
+const token = getToken();
+if(!token) return;
+
+const res = await fetch("https://api.spotify.com/v1/me/playlists",{
+headers:{Authorization:"Bearer "+token}
+});
+
+const data = await res.json();
+
+const list = document.getElementById("playlists");
+
+data.items.forEach(p => {
+
+let div = document.createElement("div");
+div.className="playlist";
+div.innerText=p.name;
+
+div.onclick=()=>loadPlaylist(p);
+
+list.appendChild(div);
+
+});
+
+}
+
+async function loadPlaylist(p){
+
+document.getElementById("cover").style.backgroundImage =
+"url("+p.images[0].url+")";
+
+const token = getToken();
+
+const res = await fetch(p.tracks.href,{
+headers:{Authorization:"Bearer "+token}
+});
+
+const data = await res.json();
+
+const songs = document.getElementById("songs");
+songs.innerHTML="";
+
+data.items.forEach(item=>{
+
+let div = document.createElement("div");
+div.className="song";
+div.innerText=item.track.name+" - "+item.track.artists[0].name;
+
+songs.appendChild(div);
+
+});
+
+}
+
+loadPlaylists();
+
+</script>
 
 </body>
 </html>
