@@ -64,15 +64,15 @@ border-radius:10px;
 
 <div class="playlists">
 
-<div class="playlist" onclick="load('6TQ37H5gLqvnxnKEayZu9I','stardust1.jpg')">
+<div class="playlist" onclick="loadPlaylist('6TQ37H5gLqvnxnKEayZu9I','stardust1.jpg')">
 Stardust Lounge Vol.1
 </div>
 
-<div class="playlist" onclick="load('6MzB3QOiWI4Qy9N9iHkdrm','stardust2.jpg')">
+<div class="playlist" onclick="loadPlaylist('6MzB3QOiWI4Qy9N9iHkdrm','stardust2.jpg')">
 Stardust Lounge Vol.2
 </div>
 
-<div class="playlist" onclick="load('6u48tAKP7yP2ankPJcGlHn','stardust3.jpg')">
+<div class="playlist" onclick="loadPlaylist('6u48tAKP7yP2ankPJcGlHn','stardust3.jpg')">
 Stardust Lounge Vol.3
 </div>
 
@@ -84,7 +84,7 @@ Stardust Lounge Vol.3
 
 <script>
 
-function load(id,cover){
+function loadPlaylist(id,cover){
 
 document.getElementById("player").innerHTML =
 '<iframe src="https://open.spotify.com/embed/playlist/'+id+'"></iframe>';
@@ -94,7 +94,11 @@ document.getElementById("cover").style.backgroundImage =
 
 }
 
-load("6TQ37H5gLqvnxnKEayZu9I","stardust1.jpg")
+// Startplaylist automatisch laden
+loadPlaylist(
+"6TQ37H5gLqvnxnKEayZu9I",
+"stardust1.jpg"
+);
 
 </script>
 
