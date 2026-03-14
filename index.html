@@ -18,7 +18,7 @@ overflow:hidden;
 }
 
 .playlists{
-width:18%;
+width:20%;
 border-right:1px solid #333;
 padding:20px;
 }
@@ -42,8 +42,8 @@ background-position:center;
 background-color:black;
 }
 
-.right{
-width:32%;
+.player{
+width:30%;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -52,8 +52,8 @@ justify-content:center;
 iframe{
 width:95%;
 height:90%;
-border-radius:10px;
 border:none;
+border-radius:10px;
 }
 
 </style>
@@ -64,15 +64,15 @@ border:none;
 
 <div class="playlists">
 
-<div class="playlist" onclick="load('6TQ37H5gLqvnxnKEayZu9I')">
+<div class="playlist" onclick="load('6TQ37H5gLqvnxnKEayZu9I','stardust1.jpg')">
 Stardust Lounge Vol.1
 </div>
 
-<div class="playlist" onclick="load('6MzB3QOiWI4Qy9N9iHkdrm')">
+<div class="playlist" onclick="load('6MzB3QOiWI4Qy9N9iHkdrm','stardust2.jpg')">
 Stardust Lounge Vol.2
 </div>
 
-<div class="playlist" onclick="load('6u48tAKP7yP2ankPJcGlHn')">
+<div class="playlist" onclick="load('6u48tAKP7yP2ankPJcGlHn','stardust3.jpg')">
 Stardust Lounge Vol.3
 </div>
 
@@ -80,24 +80,21 @@ Stardust Lounge Vol.3
 
 <div class="cover" id="cover"></div>
 
-<div class="right" id="player"></div>
+<div class="player" id="player"></div>
 
 <script>
 
-async function load(id){
+function load(id,cover){
 
 document.getElementById("player").innerHTML =
 '<iframe src="https://open.spotify.com/embed/playlist/'+id+'"></iframe>';
 
-const res = await fetch("https://open.spotify.com/oembed?url=https://open.spotify.com/playlist/"+id);
-const data = await res.json();
-
 document.getElementById("cover").style.backgroundImage =
-"url("+data.thumbnail_url+")";
+"url("+cover+")";
 
 }
 
-load("6TQ37H5gLqvnxnKEayZu9I")
+load("6TQ37H5gLqvnxnKEayZu9I","stardust1.jpg")
 
 </script>
 
