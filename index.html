@@ -11,10 +11,11 @@
 body{
 margin:0;
 background:black;
+color:white;
+font-family:Arial;
 display:flex;
 height:100vh;
 overflow:hidden;
-font-family:Arial;
 }
 
 .cover{
@@ -27,16 +28,20 @@ background-color:black;
 
 .tracklist{
 width:50%;
-background:black;
-display:flex;
-align-items:center;
-justify-content:center;
+overflow-y:auto;
+padding:40px;
+box-sizing:border-box;
 }
 
-iframe{
-width:100%;
-height:100%;
-border:none;
+.track{
+padding:8px 0;
+border-bottom:1px solid #333;
+font-size:18px;
+}
+
+.track.current{
+color:#00ffcc;
+font-weight:bold;
 }
 
 </style>
@@ -46,15 +51,14 @@ border:none;
 <body>
 
 <div class="cover" id="cover"></div>
-
-<div class="tracklist">
-<iframe id="playlistFrame"></iframe>
-</div>
+<div class="tracklist" id="tracks"></div>
 
 <script>
 
-const playlists = {
+const CLIENT_ID="ae924384707e45a48f0f2ad40d81b7ba";
+const REDIRECT_URI=window.location.href.split("#")[0];
 
+const playlists={
 "6TQ37H5gLqvnxnKEayZu9I":"stardust1.jpg",
 "6MzB3QOiWI4Qy9N9iHkdrm":"stardust2.jpg",
 "6u48tAKP7yP2ankPJcGlHn":"stardust3.jpg",
@@ -72,19 +76,119 @@ const playlists = {
 "3SbH41Hou0JDePcQtIxq4H":"stardust15.jpg",
 "10k2UhKJUy2DODxM2xCqer":"stardust16.jpg",
 "7i1GWf9jDtxsl4mvyZcRpb":"stardust17.jpg"
-
 };
 
-const playlist="6TQ37H5gLqvnxnKEayZu9I";
+function login(){
 
-document.getElementById("cover").style.backgroundImage =
-"url("+playlists[playlist]+")";
+const scopes="user-read-playback-state";
 
-document.getElementById("playlistFrame").src =
-"https://open.spotify.com/embed/playlist/"+playlist+"?utm_source=generator";
+window.location=
+"https://accounts.spotify.com/authorize"+
+"?client_id="+CLIENT_ID+
+"&response_type=token"+
+"&redirect_uri="+encodeURIComponent(REDIRECT_URI)+
+"&scope="+scopes;
+
+}
+
+function getToken(){
+
+const hash=window.location.hash;
+
+if(!hash){
+login();
+return null;
+}
+
+return hash.split("&")[0].split("=")[1];
+
+}
+
+async function getCurrentTrack(token){
+
+const res=await fetch(
+"https://api.spotify.com/v1/me/player/currently-playing",
+{
+headers:{Authorization:"Bearer "+token}
+}
+);
+
+return await res.json();
+
+}
+
+async function getPlaylistTracks(token,playlistId){
+
+const res=await fetch(
+"https://api.spotify.com/v1/playlists/"+playlistId+"/tracks",
+{
+headers:{Authorization:"Bearer "+token}
+}
+);
+
+return await res.json();
+
+}
+
+function setCover(playlistId){
+
+const cover=playlists[playlistId];
+
+document.getElementById("cover").style.backgroundImage=
+"url("+cover+")";
+
+}
+
+function renderTracks(data,currentId){
+
+const list=document.getElementById("tracks");
+list.innerHTML="";
+
+data.items.forEach(item=>{
+
+const track=item.track;
+
+const div=document.createElement("div");
+div.className="track";
+
+if(track.id===currentId){
+div.classList.add("current");
+}
+
+div.innerText=track.name+" — "+track.artists[0].name;
+
+list.appendChild(div);
+
+});
+
+}
+
+async function update(){
+
+const token=getToken();
+if(!token)return;
+
+const playing=await getCurrentTrack(token);
+
+if(!playing || !playing.context)return;
+
+const playlistId=playing.context.uri.split(":")[2];
+
+setCover(playlistId);
+
+const tracks=await getPlaylistTracks(token,playlistId);
+
+renderTracks(tracks,playing.item.id);
+
+}
+
+setInterval(update,5000);
+
+update();
 
 
 // Wake Lock
+
 let wakeLock=null;
 
 async function activateWakeLock(){
@@ -103,6 +207,7 @@ activateWakeLock();
 
 
 // Landscape Lock
+
 if(screen.orientation && screen.orientation.lock){
 screen.orientation.lock("landscape").catch(()=>{});
 }
@@ -110,5 +215,4 @@ screen.orientation.lock("landscape").catch(()=>{});
 </script>
 
 </body>
-
 </html>
