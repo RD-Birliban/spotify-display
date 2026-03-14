@@ -43,13 +43,7 @@ background-color:black;
 }
 
 .right{
-width:30%;
-display:flex;
-flex-direction:column;
-}
-
-.player{
-height:40%;
+width:32%;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -57,20 +51,9 @@ justify-content:center;
 
 iframe{
 width:95%;
-height:95%;
+height:90%;
 border-radius:10px;
-}
-
-.songs{
-flex:1;
-overflow:auto;
-padding:20px;
-}
-
-.song{
-padding:10px;
-border-bottom:1px solid #333;
-font-size:18px;
+border:none;
 }
 
 </style>
@@ -97,40 +80,20 @@ Stardust Lounge Vol.3
 
 <div class="cover" id="cover"></div>
 
-<div class="right">
-
-<div class="player" id="player"></div>
-
-<div class="right">
-
-<div class="player" id="player"></div>
-
-</div>
-
-</div>
+<div class="right" id="player"></div>
 
 <script>
 
-const covers={
-
-"6TQ37H5gLqvnxnKEayZu9I":
-"https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da84b6f6b8f7fdf9c1c7e9cbb18a",
-
-"6MzB3QOiWI4Qy9N9iHkdrm":
-"https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da84b6f6b8f7fdf9c1c7e9cbb18a",
-
-"6u48tAKP7yP2ankPJcGlHn":
-"https://image-cdn-ak.spotifycdn.com/image/ab67706c0000da84b6f6b8f7fdf9c1c7e9cbb18a"
-
-}
-
-function load(id){
+async function load(id){
 
 document.getElementById("player").innerHTML =
 '<iframe src="https://open.spotify.com/embed/playlist/'+id+'"></iframe>';
 
+const res = await fetch("https://open.spotify.com/oembed?url=https://open.spotify.com/playlist/"+id);
+const data = await res.json();
+
 document.getElementById("cover").style.backgroundImage =
-"url("+covers[id]+")";
+"url("+data.thumbnail_url+")";
 
 }
 
