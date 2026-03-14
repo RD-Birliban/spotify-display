@@ -18,23 +18,6 @@ height:100vh;
 overflow:hidden;
 }
 
-.playlists{
-width:20%;
-border-right:1px solid #333;
-padding:20px;
-}
-
-.playlist{
-padding:15px;
-border-bottom:1px solid #333;
-cursor:pointer;
-font-size:18px;
-}
-
-.playlist:hover{
-background:#222;
-}
-
 .cover{
 width:50%;
 background-size:contain;
@@ -43,18 +26,22 @@ background-position:center;
 background-color:black;
 }
 
-.player{
-width:30%;
-display:flex;
-align-items:center;
-justify-content:center;
+.tracklist{
+width:50%;
+overflow-y:auto;
+padding:40px;
+box-sizing:border-box;
 }
 
-iframe{
-width:95%;
-height:90%;
-border:none;
-border-radius:10px;
+.track{
+padding:10px 0;
+border-bottom:1px solid #333;
+font-size:20px;
+}
+
+.track.current{
+color:#00ffcc;
+font-weight:bold;
 }
 
 </style>
@@ -63,102 +50,104 @@ border-radius:10px;
 
 <body>
 
-<div class="playlists">
-
-<div class="playlist" onclick="loadPlaylist('6TQ37H5gLqvnxnKEayZu9I','stardust1.jpg')">
-Stardust Lounge Vol.1
-</div>
-
-<div class="playlist" onclick="loadPlaylist('6MzB3QOiWI4Qy9N9iHkdrm','stardust2.jpg')">
-Stardust Lounge Vol.2
-</div>
-
-<div class="playlist" onclick="loadPlaylist('6u48tAKP7yP2ankPJcGlHn','stardust3.jpg')">
-Stardust Lounge Vol.3
-</div>
-
-<div class="playlist" onclick="loadPlaylist('3iBWHhVX14r2PCwDmDRMw3','stardust4.jpg')">
-Stardust Lounge Vol.4
-</div>
-
-<div class="playlist" onclick="loadPlaylist('1WCQMg708ovpzimXgvdX5x','stardust5.jpg')">
-Stardust Lounge Vol.5
-</div>
-
-<div class="playlist" onclick="loadPlaylist('2C2iDRGUe4Mr2Z37Pou08P','stardust6.jpg')">
-Stardust Lounge Vol.6
-</div>
-
-<div class="playlist" onclick="loadPlaylist('7nzEEyhFPyuViEsLmqobOy','stardust7.jpg')">
-Stardust Lounge Vol.7
-</div>
-
-<div class="playlist" onclick="loadPlaylist('55mIftuEdbkyRd8ODZKgmX','stardust8.jpg')">
-Stardust Lounge Vol.8
-</div>
-
-<div class="playlist" onclick="loadPlaylist('7ltsfibFaWTIWkhIAFEcce,'stardust9.jpg')">
-Stardust Lounge Vol.9
-</div>
-
-<div class="playlist" onclick="loadPlaylist('0Y2zyerj0yX6A59GPOEcEt','stardust10.jpg')">
-Stardust Lounge Vol.10
-</div>
-
-<div class="playlist" onclick="loadPlaylist('1T2s8sOdvTf8WWOCYo6qEF','stardust11.jpg')">
-Stardust Lounge Vol.11
-</div>
-
-<div class="playlist" onclick="loadPlaylist('49Hxf2UzxMm0QDN59BdHxO','stardust12.jpg')">
-Stardust Lounge Vol.12
-</div>
-
-<div class="playlist" onclick="loadPlaylist('0QhTmNi5btV3EJ6uDLxfzt','stardust13.jpg')">
-Stardust Lounge Vol.13
-</div>
-
-<div class="playlist" onclick="loadPlaylist('60U1qPaQ5RUCFQyjqPEAwO','stardust14.jpg')">
-Stardust Lounge Vol.14
-</div>
-
-<div class="playlist" onclick="loadPlaylist('3SbH41Hou0JDePcQtIxq4H','stardust15.jpg')">
-Stardust Lounge Vol.15
-</div>
-
-<div class="playlist" onclick="loadPlaylist('10k2UhKJUy2DODxM2xCqer','stardust16.jpg')">
-Stardust Lounge Vol.16
-</div>
-
-<div class="playlist" onclick="loadPlaylist('7i1GWf9jDtxsl4mvyZcRpb','stardust17.jpg')">
-Stardust Lounge Vol.17
-</div>
-
-</div>
-
 <div class="cover" id="cover"></div>
 
-<div class="player" id="player"></div>
+<div class="tracklist" id="tracklist"></div>
 
 <script>
 
-function loadPlaylist(id,cover){
+// ---------- PLAYLIST DATEN ----------
 
-document.getElementById("player").innerHTML =
-'<iframe src="https://open.spotify.com/embed/playlist/'+id+'"></iframe>';
+const playlists = {
+"6TQ37H5gLqvnxnKEayZu9I": "stardust1.jpg",
+"6MzB3QOiWI4Qy9N9iHkdrm": "stardust2.jpg",
+"6u48tAKP7yP2ankPJcGlHn": "stardust3.jpg",
+"3iBWHhVX14r2PCwDmDRMw3": "stardust4.jpg",
+"1WCQMg708ovpzimXgvdX5x": "stardust5.jpg",
+"2C2iDRGUe4Mr2Z37Pou08P": "stardust6.jpg",
+"7nzEEyhFPyuViEsLmqobOy": "stardust7.jpg",
+"55mIftuEdbkyRd8ODZKgmX": "stardust8.jpg",
+"7ltsfibFaWTIWkhIAFEcce": "stardust9.jpg",
+"0Y2zyerj0yX6A59GPOEcEt": "stardust10.jpg",
+"1T2s8sOdvTf8WWOCYo6qEF": "stardust11.jpg",
+"49Hxf2UzxMm0QDN59BdHxO": "stardust12.jpg",
+"0QhTmNi5btV3EJ6uDLxfzt": "stardust13.jpg",
+"60U1qPaQ5RUCFQyjqPEAwO": "stardust14.jpg",
+"3SbH41Hou0JDePcQtIxq4H": "stardust15.jpg",
+"10k2UhKJUy2DODxM2xCqer": "stardust16.jpg",
+"7i1GWf9jDtxsl4mvyZcRpb": "stardust17.jpg"
+};
 
+// ---------- COVER ANZEIGEN ----------
+
+function setCover(playlistId){
+const cover = playlists[playlistId];
 document.getElementById("cover").style.backgroundImage =
 "url("+cover+")";
+}
+
+// ---------- SONG LISTE LADEN ----------
+
+async function loadTracks(playlistId){
+
+const res = await fetch(
+"https://api.allorigins.win/raw?url=https://open.spotify.com/playlist/"+playlistId
+);
+
+const html = await res.text();
+
+const parser = new DOMParser();
+const doc = parser.parseFromString(html, "text/html");
+
+const tracks = doc.querySelectorAll("meta[property='music:song']");
+
+const list = document.getElementById("tracklist");
+list.innerHTML="";
+
+tracks.forEach((track,index)=>{
+
+const div=document.createElement("div");
+div.className="track";
+div.innerText="Track "+(index+1);
+
+list.appendChild(div);
+
+});
 
 }
 
-// Startplaylist automatisch laden
-loadPlaylist(
-"6TQ37H5gLqvnxnKEayZu9I",
-"stardust1.jpg"
-);
+// ---------- WAKE LOCK ----------
+
+let wakeLock = null;
+
+async function activateWakeLock(){
+try{
+wakeLock = await navigator.wakeLock.request("screen");
+}catch(err){}
+}
+
+activateWakeLock();
+
+document.addEventListener("visibilitychange",()=>{
+if(document.visibilityState==="visible"){
+activateWakeLock();
+}
+});
+
+// ---------- LANDSCAPE LOCK ----------
+
+if (screen.orientation && screen.orientation.lock){
+screen.orientation.lock("landscape").catch(()=>{});
+}
+
+// ---------- START ----------
+
+const defaultPlaylist="6TQ37H5gLqvnxnKEayZu9I";
+
+setCover(defaultPlaylist);
+loadTracks(defaultPlaylist);
 
 </script>
 
 </body>
-
 </html>
