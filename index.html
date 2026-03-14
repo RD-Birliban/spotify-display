@@ -68,65 +68,76 @@ overflow:hidden;
 
 <script>
 
+// ---------- PLAYLISTS ----------
 
-// ---------- PLAYLIST DATEN ----------
+const playlists = {
 
-const playlists={
-
-1:{
-cover:"stardust1.jpg",
-songs:[
-"Song 1",
-"Song 2",
-"Song 3",
-"Song 4",
-"Song 5"
-]
-},
-
-10:{
-cover:"stardust10.jpg",
-songs:[
-"Song A",
-"Song B",
-"Song C",
-"Song D"
-]
-}
+1:{ id:"6TQ37H5gLqvnxnKEayZu9I", cover:"stardust1.jpg"},
+2:{ id:"6MzB3QOiWI4Qy9N9iHkdrm", cover:"stardust2.jpg"},
+3:{ id:"6u48tAKP7yP2ankPJcGlHn", cover:"stardust3.jpg"},
+4:{ id:"3iBWHhVX14r2PCwDmDRMw3", cover:"stardust4.jpg"},
+5:{ id:"1WCQMg708ovpzimXgvdX5x", cover:"stardust5.jpg"},
+6:{ id:"2C2iDRGUe4Mr2Z37Pou08P", cover:"stardust6.jpg"},
+7:{ id:"7nzEEyhFPyuViEsLmqobOy", cover:"stardust7.jpg"},
+8:{ id:"55mIftuEdbkyRd8ODZKgmX", cover:"stardust8.jpg"},
+9:{ id:"7ltsfibFaWTIWkhIAFEcce", cover:"stardust9.jpg"},
+10:{ id:"0Y2zyerj0yX6A59GPOEcEt", cover:"stardust10.jpg"},
+11:{ id:"1T2s8sOdvTf8WWOCYo6qEF", cover:"stardust11.jpg"},
+12:{ id:"49Hxf2UzxMm0QDN59BdHxO", cover:"stardust12.jpg"},
+13:{ id:"0QhTmNi5btV3EJ6uDLxfzt", cover:"stardust13.jpg"},
+14:{ id:"60U1qPaQ5RUCFQyjqPEAwO", cover:"stardust14.jpg"},
+15:{ id:"3SbH41Hou0JDePcQtIxq4H", cover:"stardust15.jpg"},
+16:{ id:"10k2UhKJUy2DODxM2xCqer", cover:"stardust16.jpg"},
+17:{ id:"7i1GWf9jDtxsl4mvyZcRpb", cover:"stardust17.jpg"}
 
 };
 
 
 // ---------- URL PARAMETER ----------
 
-const params=new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
+const playlistNumber = params.get("playlist") || "1";
 
-const playlistNumber=params.get("playlist") || "1";
-
-const data=playlists[playlistNumber];
+const playlistData = playlists[playlistNumber];
 
 
 // ---------- COVER ----------
 
-document.getElementById("cover").style.backgroundImage=
-"url("+data.cover+")";
+document.getElementById("cover").style.backgroundImage =
+"url("+playlistData.cover+")";
 
 
-// ---------- PLAYLIST ----------
+// ---------- SONGS LADEN ----------
 
-const list=document.getElementById("playlist");
+async function loadSongs(){
 
-data.songs.forEach(song=>{
+const url = "https://open.spotify.com/playlist/"+playlistData.id;
 
-const div=document.createElement("div");
+const res = await fetch("https://api.allorigins.win/raw?url="+url);
 
+const html = await res.text();
+
+const parser = new DOMParser();
+const doc = parser.parseFromString(html,"text/html");
+
+const tracks = doc.querySelectorAll("meta[property='music:song']");
+
+const list = document.getElementById("playlist");
+list.innerHTML="";
+
+tracks.forEach((track,i)=>{
+
+const div = document.createElement("div");
 div.className="song";
-
-div.innerText=song;
+div.innerText = "Track "+(i+1);
 
 list.appendChild(div);
 
 });
+
+}
+
+loadSongs();
 
 
 // ---------- WAKE LOCK ----------
@@ -136,9 +147,7 @@ let wakeLock=null;
 async function activateWakeLock(){
 
 try{
-
-wakeLock=await navigator.wakeLock.request("screen");
-
+wakeLock = await navigator.wakeLock.request("screen");
 }catch(e){}
 
 }
@@ -148,9 +157,7 @@ activateWakeLock();
 document.addEventListener("visibilitychange",()=>{
 
 if(document.visibilityState==="visible"){
-
 activateWakeLock();
-
 }
 
 });
@@ -161,15 +168,12 @@ activateWakeLock();
 function lockLandscape(){
 
 if(screen.orientation && screen.orientation.lock){
-
 screen.orientation.lock("landscape").catch(()=>{});
-
 }
 
 }
 
 document.body.addEventListener("click",lockLandscape,{once:true});
-
 
 </script>
 
