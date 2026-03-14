@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 
 body{
 margin:0;
-display:flex;
 background:black;
 color:white;
 font-family:Arial;
+display:flex;
 height:100vh;
+overflow:hidden;
 }
 
 .playlists{
-width:25%;
-overflow:auto;
+width:20%;
 border-right:1px solid #333;
 padding:20px;
+overflow:auto;
 }
 
 .playlist{
-padding:10px;
-cursor:pointer;
+padding:15px;
 border-bottom:1px solid #333;
+cursor:pointer;
+font-size:18px;
 }
 
 .playlist:hover{
@@ -31,7 +35,7 @@ background:#222;
 }
 
 .cover{
-width:35%;
+width:40%;
 background-size:cover;
 background-position:center;
 }
@@ -39,105 +43,75 @@ background-position:center;
 .songs{
 width:40%;
 overflow:auto;
-padding:20px;
+padding:30px;
 }
 
 .song{
 padding:8px;
+font-size:18px;
 border-bottom:1px solid #333;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="playlists" id="playlists"></div>
+<div class="playlists">
+
+<div class="playlist" onclick="load('6TQ37H5gLqvnxnKEayZu9I')">
+Stardust Lounge Vol.1
+</div>
+
+<div class="playlist" onclick="load('6MzB3QOiWI4Qy9N9iHkdrm')">
+Stardust Lounge Vol.2
+</div>
+
+<div class="playlist" onclick="load('6u48tAKP7yP2ankPJcGlHn')">
+Stardust Lounge Vol.3
+</div>
+
+</div>
+
 <div class="cover" id="cover"></div>
+
 <div class="songs" id="songs"></div>
 
 <script>
 
-const clientId = "ae924384707e45a48f0f2ad40d81b7ba";
-const redirectUri = "https://rd-birliban.github.io/spotify-display";
-const scopes = "playlist-read-private";
+const playlists = {
 
-function login(){
-let url =
-"https://accounts.spotify.com/authorize" +
-"?client_id=" + clientId +
-"&response_type=code" +
-"&redirect_uri=" + encodeURIComponent(redirectUri) +
-"&scope=" + scopes;
+"6TQ37H5gLqvnxnKEayZu9I":{
+cover:"https://i.scdn.co/image/ab67616d0000b273",
+songs:[]
+},
 
-window.location = url;
+"6MzB3QOiWI4Qy9N9iHkdrm":{
+cover:"https://i.scdn.co/image/ab67616d0000b273",
+songs:[]
+},
+
+"6u48tAKP7yP2ankPJcGlHn":{
+cover:"https://i.scdn.co/image/ab67616d0000b273",
+songs:[]
 }
-
-function getToken(){
-let hash = window.location.hash;
-if(!hash){
-login();
-return null;
-}
-return hash.split("&")[0].split("=")[1];
-}
-
-async function loadPlaylists(){
-
-const token = getToken();
-if(!token) return;
-
-const res = await fetch("https://api.spotify.com/v1/me/playlists",{
-headers:{Authorization:"Bearer "+token}
-});
-
-const data = await res.json();
-
-const list = document.getElementById("playlists");
-
-data.items.forEach(p => {
-
-let div = document.createElement("div");
-div.className="playlist";
-div.innerText=p.name;
-
-div.onclick=()=>loadPlaylist(p);
-
-list.appendChild(div);
-
-});
 
 }
 
-async function loadPlaylist(p){
+async function load(id){
 
 document.getElementById("cover").style.backgroundImage =
-"url("+p.images[0].url+")";
+"url(https://image-cdn-ak.spotifycdn.com/image/playlist/"+id+")";
 
-const token = getToken();
+const res = await fetch("https://api.allorigins.win/raw?url=https://open.spotify.com/playlist/"+id);
 
-const res = await fetch(p.tracks.href,{
-headers:{Authorization:"Bearer "+token}
-});
-
-const data = await res.json();
-
-const songs = document.getElementById("songs");
-songs.innerHTML="";
-
-data.items.forEach(item=>{
-
-let div = document.createElement("div");
-div.className="song";
-div.innerText=item.track.name+" - "+item.track.artists[0].name;
-
-songs.appendChild(div);
-
-});
+document.getElementById("songs").innerHTML =
+"Songs werden geladen...";
 
 }
 
-loadPlaylists();
+load("6TQ37H5gLqvnxnKEayZu9I")
 
 </script>
 
