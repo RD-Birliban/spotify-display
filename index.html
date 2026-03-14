@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,10 +18,9 @@ overflow:hidden;
 }
 
 .playlists{
-width:20%;
+width:18%;
 border-right:1px solid #333;
 padding:20px;
-overflow:auto;
 }
 
 .playlist{
@@ -35,21 +35,41 @@ background:#222;
 }
 
 .cover{
-width:40%;
+width:42%;
 background-size:cover;
 background-position:center;
+transition:1s;
+}
+
+.right{
+width:40%;
+display:flex;
+flex-direction:column;
+}
+
+.player{
+height:40%;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+iframe{
+width:95%;
+height:95%;
+border-radius:10px;
 }
 
 .songs{
-width:40%;
+flex:1;
 overflow:auto;
-padding:30px;
+padding:20px;
 }
 
 .song{
-padding:8px;
-font-size:18px;
+padding:10px;
 border-bottom:1px solid #333;
+font-size:18px;
 }
 
 </style>
@@ -76,38 +96,33 @@ Stardust Lounge Vol.3
 
 <div class="cover" id="cover"></div>
 
-<div class="songs" id="songs"></div>
+<div class="right">
+
+<div class="player" id="player"></div>
+
+<div class="songs" id="songs">
+
+<div class="song">Songliste wird geladen…</div>
+
+</div>
+
+</div>
 
 <script>
 
-const playlists = {
-
-"6TQ37H5gLqvnxnKEayZu9I":{
-cover:"https://i.scdn.co/image/ab67616d0000b273",
-songs:[]
-},
-
-"6MzB3QOiWI4Qy9N9iHkdrm":{
-cover:"https://i.scdn.co/image/ab67616d0000b273",
-songs:[]
-},
-
-"6u48tAKP7yP2ankPJcGlHn":{
-cover:"https://i.scdn.co/image/ab67616d0000b273",
-songs:[]
+const covers={
+"6TQ37H5gLqvnxnKEayZu9I":"https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228",
+"6MzB3QOiWI4Qy9N9iHkdrm":"https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228",
+"6u48tAKP7yP2ankPJcGlHn":"https://i.scdn.co/image/ab67616d0000b273ff9ca10b55ce82ae553c8228"
 }
 
-}
+function load(id){
 
-async function load(id){
+document.getElementById("player").innerHTML =
+'<iframe src="https://open.spotify.com/embed/playlist/'+id+'"></iframe>';
 
 document.getElementById("cover").style.backgroundImage =
-"url(https://image-cdn-ak.spotifycdn.com/image/playlist/"+id+")";
-
-const res = await fetch("https://api.allorigins.win/raw?url=https://open.spotify.com/playlist/"+id);
-
-document.getElementById("songs").innerHTML =
-"Songs werden geladen...";
+"url("+covers[id]+")";
 
 }
 
@@ -116,4 +131,5 @@ load("6TQ37H5gLqvnxnKEayZu9I")
 </script>
 
 </body>
+
 </html>
