@@ -1,0 +1,8 @@
+{
+  "name": "Stardust Lounge",
+  "short_name": "Stardust",
+  "start_url": "https://rd-birliban.github.io/spotify-display",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000"
+}
