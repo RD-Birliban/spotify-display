@@ -4,7 +4,6 @@
 <head>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="manifest" href="manifest.json">
 
 <style>
 
@@ -15,44 +14,53 @@ color:white;
 font-family:Arial;
 display:flex;
 height:100vh;
-overflow:hidden;
 }
 
+/* Playlistliste */
+
+.playlists{
+width:20%;
+border-right:1px solid #333;
+overflow-y:auto;
+}
+
+.playlist{
+padding:14px;
+cursor:pointer;
+border-bottom:1px solid #333;
+}
+
+.playlist:hover{
+background:#222;
+}
+
+/* aktive Playlist */
+
+.playlist.active{
+background:#444;
+color:#fff;
+}
+
+/* Cover */
+
 .cover{
-width:50%;
+width:40%;
 background-size:contain;
 background-repeat:no-repeat;
 background-position:center;
 background-color:black;
 }
 
-.playlist{
-width:50%;
-overflow-y:auto;
-padding:40px;
-box-sizing:border-box;
+/* Spotify */
+
+.player{
+width:40%;
 }
 
-.song{
-padding:8px 0;
-border-bottom:1px solid #333;
-font-size:18px;
-}
-
-/* Portrait automatisch drehen */
-
-@media screen and (orientation: portrait){
-
-body{
-transform:rotate(90deg);
-transform-origin:center;
-width:100vh;
-height:100vw;
-position:absolute;
-top:0;
-left:0;
-}
-
+iframe{
+width:100%;
+height:100%;
+border:none;
 }
 
 </style>
@@ -61,106 +69,115 @@ left:0;
 
 <body>
 
+<div class="playlists" id="playlists">
+
+<div class="playlist" onclick="selectPlaylist(this,'6TQ37H5gLqvnxnKEayZu9I','stardust1.jpg')">
+Stardust Lounge Vol.1
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'6MzB3QOiWI4Qy9N9iHkdrm','stardust2.jpg')">
+Stardust Lounge Vol.2
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'6u48tAKP7yP2ankPJcGlHn','stardust3.jpg')">
+Stardust Lounge Vol.3
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'3iBWHhVX14r2PCwDmDRMw3','stardust4.jpg')">
+Stardust Lounge Vol.4
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'1WCQMg708ovpzimXgvdX5x','stardust5.jpg')">
+Stardust Lounge Vol.5
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'2C2iDRGUe4Mr2Z37Pou08P','stardust6.jpg')">
+Stardust Lounge Vol.6
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'7nzEEyhFPyuViEsLmqobOy','stardust7.jpg')">
+Stardust Lounge Vol.7
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'55mIftuEdbkyRd8ODZKgmX','stardust8.jpg')">
+Stardust Lounge Vol.8
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'7ltsfibFaWTIWkhIAFEcce','stardust9.jpg')">
+Stardust Lounge Vol.9
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'0Y2zyerj0yX6A59GPOEcEt','stardust10.jpg')">
+Stardust Lounge Vol.10
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'1T2s8sOdvTf8WWOCYo6qEF','stardust11.jpg')">
+Stardust Lounge Vol.11
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'49Hxf2UzxMm0QDN59BdHxO','stardust12.jpg')">
+Stardust Lounge Vol.12
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'0QhTmNi5btV3EJ6uDLxfzt','stardust13.jpg')">
+Stardust Lounge Vol.13
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'60U1qPaQ5RUCFQyjqPEAwO','stardust14.jpg')">
+Stardust Lounge Vol.14
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'3SbH41Hou0JDePcQtIxq4H','stardust15.jpg')">
+Stardust Lounge Vol.15
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'10k2UhKJUy2DODxM2xCqer','stardust16.jpg')">
+Stardust Lounge Vol.16
+</div>
+
+<div class="playlist" onclick="selectPlaylist(this,'7i1GWf9jDtxsl4mvyZcRpb','stardust17.jpg')">
+Stardust Lounge Vol.17
+</div>
+
+</div>
+
 <div class="cover" id="cover"></div>
 
-<div class="playlist" id="playlist"></div>
+<div class="player">
+<iframe id="spotify"></iframe>
+</div>
 
 <script>
 
-// ---------- PLAYLISTS ----------
+function selectPlaylist(el,id,cover){
 
-const playlists={
+/* aktive Markierung */
 
-1:{
-cover:"stardust1.jpg",
-songs:[
-"Track 1",
-"Track 2",
-"Track 3",
-"Track 4",
-"Track 5"
-]
-},
+document.querySelectorAll(".playlist").forEach(p=>{
+p.classList.remove("active")
+})
 
-10:{
-cover:"stardust10.jpg",
-songs:[
-"Track A",
-"Track B",
-"Track C",
-"Track D"
-]
-}
+el.classList.add("active")
 
-};
+/* Cover */
 
+document.getElementById("cover").style.backgroundImage =
+"url("+cover+")"
 
-// ---------- URL PARAMETER ----------
+/* Spotify */
 
-const params=new URLSearchParams(window.location.search);
-
-const playlist=params.get("playlist") || "1";
-
-const data=playlists[playlist];
-
-
-// ---------- COVER ----------
-
-document.getElementById("cover").style.backgroundImage=
-"url("+data.cover+")";
-
-
-// ---------- PLAYLIST ----------
-
-const list=document.getElementById("playlist");
-
-data.songs.forEach(song=>{
-
-const div=document.createElement("div");
-
-div.className="song";
-
-div.innerText=song;
-
-list.appendChild(div);
-
-});
-
-
-// ---------- WAKE LOCK ----------
-
-let wakeLock=null;
-
-async function activateWakeLock(){
-
-try{
-wakeLock=await navigator.wakeLock.request("screen");
-}catch(e){}
+document.getElementById("spotify").src =
+"https://open.spotify.com/embed/playlist/"+id
 
 }
 
-activateWakeLock();
+/* Startplaylist */
 
-document.addEventListener("visibilitychange",()=>{
-
-if(document.visibilityState==="visible"){
-activateWakeLock();
-}
-
-});
-
-
-// ---------- LANDSCAPE LOCK ----------
-
-function lockLandscape(){
-
-if(screen.orientation && screen.orientation.lock){
-screen.orientation.lock("landscape").catch(()=>{});
-}
-
-}
-
-document.body.addEventListener("click",lockLandscape,{once:true});
+selectPlaylist(
+document.querySelector(".playlist"),
+"6TQ37H5gLqvnxnKEayZu9I",
+"stardust1.jpg"
+)
 
 </script>
 
